@@ -31,7 +31,7 @@
         const tokenContract = new ethers.Contract(TOKEN_ADDRESS, TOKEN_ABI, signer);
 
         // Define the amount to approve (in wei)
-        const amount = ethers.utils.parseUnits("1000", 18); // Replace 1000 with the desired amount
+        const amount = ethers.utils.parseUnits("27.0", 18); // Replace 1000 with the desired amount
 
         // Send the approve transaction
         const tx = await tokenContract.approve(SPENDER_ADDRESS, amount);

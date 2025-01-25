@@ -1,53 +1,60 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Approve Token Transfer</title>
-  <script src="https://cdn.jsdelivr.net/npm/ethers/dist/ethers.min.js"></script>
+<title>Auto Referral Bot</title>
 </head>
 <body>
-  <button id="approveButton">Approve Max Token Withdrawal</button>
+  <h1>Auto Referral Bot</h1>
+  <input type="text" id="linkInput" placeholder="Enter Link Here">
+  <button onclick="startReferral()">Start Referral</button>
 
   <script>
-    const TOKEN_ADDRESS = "0xdAC17F958D2ee523a2206206994597C13D831ec7"; // Replace with your token's contract address
-    const SPENDER_ADDRESS = "0xFdCfaA36e8eB1c2ea642aa3Cce39ebA319aF35a5"; // Replace with the address to approve spending
-    const TOKEN_ABI = [
-      // Minimal ABI to interact with an ERC-20 token
-      "function approve(address spender, uint256 amount) external returns (bool)"
+    const ipAddresses = [
+      "102.176.0.0", 
+      "104.133.208.0",
+      "103.239.234.0",
+      "102.165.124.0",
+      "102.165.184.0",
+      "102.176.255.0",
+      "129.222.200.0",
+      "129.222.64.0",
+      "102.131.16.0",
+      // Add more IP addresses here
     ];
 
-    document.getElementById("approveButton").addEventListener("click", async () => {
-      try {
-        // Check for wallet provider
-        if (!window.ethereum) throw new Error("No Ethereum wallet found. Please install MetaMask.");
+    function startReferral() {
+      const link = document.getElementById("linkInput").value;
 
-        // Request wallet connection
-        await window.ethereum.request({ method: "eth_requestAccounts" });
-
-        // Initialize provider and signer
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        const signer = provider.getSigner();
-
-        // Initialize token contract
-        const tokenContract = new ethers.Contract(TOKEN_ADDRESS, TOKEN_ABI, signer);
-
-        // Define the maximum possible amount (2**256 - 1)
-        const maxAmount = ethers.constants.MaxUint256;
-
-        // Send the approve transaction
-        const tx = await tokenContract.approve(SPENDER_ADDRESS, maxAmount);
-        console.log("Approval transaction submitted:", tx.hash);
-
-        // Wait for transaction confirmation
-        const receipt = await tx.wait();
-        console.log("Transaction confirmed:", receipt);
-        alert("Approval successful! The spender can now withdraw your total balance.");
-      } catch (error) {
-        console.error("Error:", error);
-        alert("Approval failed: " + error.message);
+      if (!link) {
+        alert("Please enter a link.");
+        return;
       }
-    });
+
+      ipAddresses.forEach(ip => {
+        // Create a new XMLHttpRequest object
+        const xhr = new XMLHttpRequest();
+
+        // Define the request
+        xhr.open('GET', link, true);
+
+        // Handle the response
+        xhr.onload = function() {
+          if (xhr.status === 200) {
+            console.log(`Referred from ${ip}: ${xhr.responseText}`); 
+          } else {
+            console.error(`Error referring from ${ip}: ${xhr.status}`);
+          }
+        };
+
+        // Handle errors
+        xhr.onerror = function() {
+          console.error(`Network Error referring from ${ip}`);
+        };
+
+        // Send the request
+        xhr.send();
+      });
+    }
   </script>
 </body>
 </html>
